@@ -1,0 +1,24 @@
+{
+  "name": "markdown-link-checker-cli",
+  "version": "1.0.0",
+  "description": "A professional CLI tool to scan and validate local and remote markdown links.",
+  "main": "src/index.js",
+  "bin": {
+    "md-link-checker": "src/index.js"
+  },
+  "scripts": {
+    "test": "jest",
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "markdown",
+    "link-checker",
+    "validation",
+    "cli"
+  ],
+  "author": "Sourav Kaintura",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
