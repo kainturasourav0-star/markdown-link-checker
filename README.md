@@ -33,3 +33,6 @@ Validate functionality via Jest:
 ```bash
 npm test
 ```
+
+<!-- Enabled collaboration check -->
+
