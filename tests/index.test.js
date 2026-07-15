@@ -26,4 +26,9 @@ describe('Link Validator', () => {
     const res = await checkUrl('non-existent-file-path-xyz.md');
     expect(res.status).toBe('DEAD');
   });
+
+  test('should support custom timeout options', async () => {
+    const res = await checkUrl('https://google.com', 1000);
+    expect(res.status).toBe('ALIVE');
+  });
 });

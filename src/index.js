@@ -55,8 +55,17 @@ function checkUrl(urlStr, timeoutMs = 5000) {
 async function main() {
   const args = process.argv.slice(2);
   if (args.length === 0) {
-    console.log('Usage: md-link-checker <file-path.md>');
+    console.log('Usage: md-link-checker <file-path.md> [--timeout <ms>]');
     process.exit(0);
+  }
+
+  // Parse timeout argument
+  let timeoutMs = 5000;
+  const timeoutIndex = args.indexOf('--timeout');
+  if (timeoutIndex !== -1 && args[timeoutIndex + 1]) {
+    timeoutMs = parseInt(args[timeoutIndex + 1], 10);
+    // Remove option from list of targets
+    args.splice(timeoutIndex, 2);
   }
 
   const filePath = path.resolve(args[0]);
@@ -68,9 +77,9 @@ async function main() {
   const content = fs.readFileSync(filePath, 'utf-8');
   const links = extractLinks(content);
 
-  console.log(`Found ${links.length} link(s) in file. Validating...\n`);
+  console.log(`Found ${links.length} link(s) in file. Validating with ${timeoutMs}ms timeout...\n`);
 
-  const checks = links.map(l => checkUrl(l.url));
+  const checks = links.map(l => checkUrl(l.url, timeoutMs));
   const results = await Promise.all(checks);
 
   results.forEach(res => {
