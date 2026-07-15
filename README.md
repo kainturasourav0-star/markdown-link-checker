@@ -22,9 +22,19 @@ npm install
 
 ## 💻 Usage
 
-To scan a markdown file:
+To scan a markdown file with default settings:
 ```bash
 npm start -- path/to/file.md
+```
+
+To configure a custom request timeout (e.g. 2000 milliseconds):
+```bash
+npm start -- path/to/file.md --timeout 2000
+```
+
+To run in quiet mode (only reporting dead links):
+```bash
+npm start -- path/to/file.md --quiet
 ```
 
 ## 🧪 Running Tests

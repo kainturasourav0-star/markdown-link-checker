@@ -55,7 +55,7 @@ function checkUrl(urlStr, timeoutMs = 5000) {
 async function main() {
   const args = process.argv.slice(2);
   if (args.length === 0) {
-    console.log('Usage: md-link-checker <file-path.md> [--timeout <ms>]');
+    console.log('Usage: md-link-checker <file-path.md> [--timeout <ms>] [--quiet]');
     process.exit(0);
   }
 
@@ -68,6 +68,14 @@ async function main() {
     args.splice(timeoutIndex, 2);
   }
 
+  // Parse quiet mode
+  let isQuiet = false;
+  const quietIndex = args.indexOf('--quiet');
+  if (quietIndex !== -1) {
+    isQuiet = true;
+    args.splice(quietIndex, 1);
+  }
+
   const filePath = path.resolve(args[0]);
   if (!fs.existsSync(filePath)) {
     console.error(`Error: File not found at path: ${filePath}`);
@@ -77,15 +85,28 @@ async function main() {
   const content = fs.readFileSync(filePath, 'utf-8');
   const links = extractLinks(content);
 
-  console.log(`Found ${links.length} link(s) in file. Validating with ${timeoutMs}ms timeout...\n`);
+  if (!isQuiet) {
+    console.log(`Found ${links.length} link(s) in file. Validating with ${timeoutMs}ms timeout...\n`);
+  }
 
   const checks = links.map(l => checkUrl(l.url, timeoutMs));
   const results = await Promise.all(checks);
 
+  let failedCount = 0;
   results.forEach(res => {
-    const symbol = res.status === 'ALIVE' ? '✅' : '❌';
-    console.log(`${symbol} ${res.url} is ${res.status}`);
+    if (res.status === 'DEAD') {
+      failedCount++;
+      console.log(`❌ ${res.url} is DEAD`);
+    } else if (!isQuiet) {
+      console.log(`✅ ${res.url} is ALIVE`);
+    }
   });
+
+  if (isQuiet && failedCount > 0) {
+    console.log(`\nScan finished. Found ${failedCount} dead link(s).`);
+  } else if (isQuiet) {
+    console.log(`Scan finished. All links are ALIVE.`);
+  }
 }
 
 if (require.main === module) {
